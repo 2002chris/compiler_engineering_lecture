@@ -29,18 +29,28 @@ public class Scanner {
 
         while(!characterStack.isEmpty()){
             Stack<Character> readChar = new Stack<>();
+
             returnToken.add(checkFun(characterStack, lineNumber, readChar));
             returnToken.add(checkIf(characterStack, lineNumber, readChar));
+            returnToken.add(checkPrint(characterStack, lineNumber, readChar));
+
             returnToken.add(checkParenLeft(characterStack, lineNumber, readChar));
             returnToken.add(checkParenRight(characterStack, lineNumber, readChar));
             returnToken.add(checkBraceLeft(characterStack, lineNumber, readChar));
             returnToken.add(checkBraceRight(characterStack, lineNumber, readChar));
+
             returnToken.add(checkComma(characterStack, lineNumber, readChar));
             returnToken.add(checkPlus(characterStack, lineNumber, readChar));
+            returnToken.add(checkMinus(characterStack, lineNumber, readChar));
+            returnToken.add(checkStar(characterStack, lineNumber, readChar));
+            returnToken.add(checkSlash(characterStack, lineNumber, readChar));
+            returnToken.add(checkDot(characterStack, lineNumber, readChar));
+
             returnToken.add(checkSemicolon(characterStack, lineNumber, readChar));
             returnToken.add(checkNumber(characterStack, lineNumber, readChar));
             returnToken.add(checkString(characterStack, lineNumber, readChar));
             returnToken.add(checkIdentifier(characterStack, lineNumber, readChar));
+            returnToken.add(checkComment(characterStack,lineNumber,readChar));
             removeWhitespace(characterStack, readChar);
 //            if (!characterStack.isEmpty())
 //                characterStack.pop();
@@ -88,6 +98,35 @@ public class Scanner {
                         characterStack.pop();
                         readChar.clear();
                         return new Token(TokenType.IF, "if","if", lineNumber);
+                    }
+                }
+            }
+        }
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkPrint(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if(!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if(readChar.peek() == 'p'){
+                if(characterStack.peek() == 'r'){
+                    readChar.push(characterStack.pop());
+                    if (characterStack.peek() == 'i'){
+                        readChar.push(characterStack.pop());
+                        if (characterStack.peek() == 'n'){
+                            readChar.push(characterStack.pop());
+                            if (characterStack.peek() == 't'){
+                                readChar.push(characterStack.pop());
+                                if (characterStack.peek() == ' '){
+                                    characterStack.pop();
+                                    readChar.clear();
+                                    return new Token(TokenType.PRINT, "print", "print", lineNumber);
+
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -282,7 +321,271 @@ public class Scanner {
         return null;
     }
 
+    public Token checkStar(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if(readChar.peek() == '*'){
+                readChar.clear();
+                return new Token(TokenType.STAR, "*", "*", lineNumber);
+            }
+        }
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
 
+    public Token checkDot(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if(readChar.peek() == '.'){
+                readChar.clear();
+                return new Token(TokenType.DOT, ".", ".", lineNumber);
+            }
+        }
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkSlash(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if(readChar.peek() == '/' && (characterStack.isEmpty() || characterStack.peek() != '/')){
+                readChar.clear();
+                return new Token(TokenType.SLASH, "/", "/", lineNumber);
+            }
+        }
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkComment(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if(!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if (readChar.peek() == '/'){
+                readChar.push(characterStack.pop());
+                if (readChar.peek() == '/'){
+                    while(!characterStack.isEmpty()){
+                        readChar.push(characterStack.pop());
+                    }
+                    StringBuilder comment = new StringBuilder();
+                    for (char c :
+                            readChar) {
+                        comment.append(c);
+                    }
+                    readChar.clear();
+                    return new Token(TokenType.COMMENT, comment.toString(), comment.substring(2), lineNumber);
+                }
+            }
+        }
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkBang(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if (readChar.peek() == '!' && (characterStack.isEmpty() || !(characterStack.peek() == '='))){
+                readChar.clear();
+                return new Token(TokenType.BANG, "!","!",lineNumber);
+            }
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkBangEq(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkEq(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkEqEq(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkGr(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkGrEq(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkLe(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkLeEq(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkAnd(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkElse(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkFalse(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkFor(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkNil(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkOr(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkReturn(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkTrue(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkVar(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkWhile(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+
+        }
+
+
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
 
     public boolean isAlphabetic(char c){
         return c >= 65 && c <= 90 || c >= 97 && c <= 122;
