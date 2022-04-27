@@ -31,7 +31,6 @@ public class Scanner {
             Stack<Character> readChar = new Stack<>();
             returnToken.add(checkFun(characterStack, lineNumber, readChar));
             returnToken.add(checkIf(characterStack, lineNumber, readChar));
-            returnToken.add(checkPrint(characterStack, lineNumber, readChar));
             returnToken.add(checkParenLeft(characterStack, lineNumber, readChar));
             returnToken.add(checkParenRight(characterStack, lineNumber, readChar));
             returnToken.add(checkBraceLeft(characterStack, lineNumber, readChar));
@@ -40,6 +39,7 @@ public class Scanner {
             returnToken.add(checkPlus(characterStack, lineNumber, readChar));
             returnToken.add(checkSemicolon(characterStack, lineNumber, readChar));
             returnToken.add(checkNumber(characterStack, lineNumber, readChar));
+            returnToken.add(checkString(characterStack, lineNumber, readChar));
             returnToken.add(checkIdentifier(characterStack, lineNumber, readChar));
             removeWhitespace(characterStack, readChar);
 //            if (!characterStack.isEmpty())
@@ -69,7 +69,7 @@ public class Scanner {
                     if (characterStack.peek() == ' '){
                         characterStack.pop();
                         readChar.clear();
-                       return new Token(TokenType.FUN,"fun", Method.class, lineNumber);
+                       return new Token(TokenType.FUN,"fun", "fun", lineNumber);
                     }
                 }
             }
@@ -87,7 +87,7 @@ public class Scanner {
                     if (characterStack.peek() == ' '){
                         characterStack.pop();
                         readChar.clear();
-                        return new Token(TokenType.IF, "if","", lineNumber);
+                        return new Token(TokenType.IF, "if","if", lineNumber);
                     }
                 }
             }
@@ -102,7 +102,7 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if (readChar.peek() == '('){
                 readChar.clear();
-                return new Token(TokenType.LEFT_PAREN, "LeftParen","(", lineNumber);
+                return new Token(TokenType.LEFT_PAREN, "(","(", lineNumber);
             }
         }
         while(!readChar.empty())
@@ -114,7 +114,7 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if (readChar.peek() == ')'){
                 readChar.clear();
-                return new Token(TokenType.RIGHT_PAREN, "RightParen",")", lineNumber);
+                return new Token(TokenType.RIGHT_PAREN, ")",")", lineNumber);
             }
         }
         while(!readChar.empty())
@@ -126,7 +126,7 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if (readChar.peek() == '{'){
                 readChar.clear();
-                return new Token(TokenType.LEFT_BRACE, "LeftBrace","{", lineNumber);
+                return new Token(TokenType.LEFT_BRACE, "{","{", lineNumber);
             }
         }
         while(!readChar.empty())
@@ -138,7 +138,7 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if (readChar.peek() == '}'){
                 readChar.clear();
-                return new Token(TokenType.RIGHT_BRACE, "RightBrace","}", lineNumber);
+                return new Token(TokenType.RIGHT_BRACE, "}","}", lineNumber);
             }
         }
         while(!readChar.empty())
@@ -151,7 +151,7 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if(readChar.peek() == ','){
                 readChar.clear();
-                return new Token(TokenType.COMMA, "Comma", ",", lineNumber);
+                return new Token(TokenType.COMMA, ",", ",", lineNumber);
             }
         }
         while(!readChar.empty())
@@ -171,7 +171,7 @@ public class Scanner {
                     identifier.append(c);
                 }
                 readChar.clear();
-                return new Token(TokenType.IDENTIFIER, "Identifier", identifier.toString(), lineNumber);
+                return new Token(TokenType.IDENTIFIER, identifier.toString(), identifier.toString(), lineNumber);
             }
         }
         while(!readChar.empty())
@@ -190,47 +190,30 @@ public class Scanner {
             characterStack.push(readChar.pop());
     }
 
-    public Token checkPrint(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
-        if(!characterStack.isEmpty()){
-            readChar.push(characterStack.pop());
-            if(readChar.peek() == 'p'){
-                if(characterStack.peek() == 'r'){
-                    readChar.push(characterStack.pop());
-                    if (characterStack.peek() == 'i'){
-                        readChar.push(characterStack.pop());
-                        if (characterStack.peek() == 'n'){
-                            readChar.push(characterStack.pop());
-                            if (characterStack.peek() == 't'){
-                                readChar.push(characterStack.pop());
-                                if (characterStack.peek() == ' '){
-                                    characterStack.pop();
-                                    readChar.clear();
-                                    return new Token(TokenType.IDENTIFIER, "Identifier", "print", lineNumber);
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        while(!readChar.empty())
-            characterStack.push(readChar.pop());
-        return null;
-    }
-
     public Token checkNumber(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
         while(!characterStack.isEmpty() && Character.isDigit(characterStack.peek())){
             readChar.push(characterStack.pop());
         }
+        StringBuilder number = new StringBuilder();
         if(!readChar.isEmpty() && !(characterStack.peek() == '.')){
-            StringBuilder number = new StringBuilder();
             for (char c :
                     readChar) {
                 number.append(c);
             }
             readChar.clear();
-            return new Token(TokenType.NUMBER, "Number", Integer.parseInt(number.toString()), lineNumber);
+            return new Token(TokenType.NUMBER, number.toString(), Integer.parseInt(number.toString()), lineNumber);
+        }
+        if(!readChar.isEmpty() && characterStack.peek() == '.'){
+            readChar.push(characterStack.pop());
+            while(!characterStack.isEmpty() && Character.isDigit(characterStack.peek())){
+                readChar.push(characterStack.pop());
+            }
+            for (char c :
+                    readChar) {
+                number.append(c);
+            }
+            readChar.clear();
+            return new Token(TokenType.NUMBER, number.toString(), Double.parseDouble(number.toString()), lineNumber);
         }
 
         while(!readChar.empty())
@@ -243,7 +226,7 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if(readChar.peek() == '+'){
                 readChar.clear();
-                return new Token(TokenType.PLUS, "Plus", "+", lineNumber);
+                return new Token(TokenType.PLUS, "+", "+", lineNumber);
             }
         }
         while(!readChar.empty())
@@ -256,13 +239,50 @@ public class Scanner {
             readChar.push(characterStack.pop());
             if(readChar.peek() == ';'){
                 readChar.clear();
-                return new Token(TokenType.SEMICOLON, "Semicolon", ";", lineNumber);
+                return new Token(TokenType.SEMICOLON, ";", ";", lineNumber);
             }
         }
         while(!readChar.empty())
             characterStack.push(readChar.pop());
         return null;
     }
+
+    public Token checkString(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if (readChar.peek() == '"'){
+                while(characterStack.peek() != '"'){
+                    readChar.push(characterStack.pop());
+                }
+                readChar.push(characterStack.pop());
+                StringBuilder string = new StringBuilder();
+                for (char c :
+                        readChar) {
+                    string.append(c);
+                }
+                readChar.clear();
+                return new Token(TokenType.STRING, string.toString(), string.substring(1,string.length()-1),lineNumber);
+            }
+        }
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+    public Token checkMinus(Stack<Character> characterStack, int lineNumber, Stack<Character> readChar){
+        if (!characterStack.isEmpty()){
+            readChar.push(characterStack.pop());
+            if(readChar.peek() == '-'){
+                readChar.clear();
+                return new Token(TokenType.MINUS, "-", "-", lineNumber);
+            }
+        }
+        while(!readChar.empty())
+            characterStack.push(readChar.pop());
+        return null;
+    }
+
+
 
     public boolean isAlphabetic(char c){
         return c >= 65 && c <= 90 || c >= 97 && c <= 122;
