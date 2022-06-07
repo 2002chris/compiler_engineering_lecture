@@ -4,9 +4,9 @@ public class TestScanner {
 
     public static void main(String[] args) {
         String programm = """
-            print and else false for nil or return true var while   } fu
-            fun printSum(a,b) {
-            print a/b;
+            for(var i = 0; a < d; i = i+1){
+                    a = a+1;
+                }
             
                 if\040
                 print 25/60; //adbawiofwgofa

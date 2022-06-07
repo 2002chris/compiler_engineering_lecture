@@ -42,7 +42,6 @@ public class Scanner {
             returnToken.add(checkOr(characterStack, lineNumber, readChar));
             returnToken.add(checkReturn(characterStack, lineNumber, readChar));
             returnToken.add(checkTrue(characterStack, lineNumber, readChar));
-            returnToken.add(checkVar(characterStack, lineNumber, readChar));
             returnToken.add(checkWhile(characterStack, lineNumber, readChar));
 
             returnToken.add(checkParenLeft(characterStack, lineNumber, readChar));
@@ -68,6 +67,7 @@ public class Scanner {
 
             returnToken.add(checkNumber(characterStack, lineNumber, readChar));
             returnToken.add(checkString(characterStack, lineNumber, readChar));
+            returnToken.add(checkVar(characterStack, lineNumber, readChar));
             returnToken.add(checkIdentifier(characterStack, lineNumber, readChar));
             returnToken.add(checkComment(characterStack, lineNumber, readChar));
             removeWhitespace(characterStack, readChar);
@@ -117,7 +117,9 @@ public class Scanner {
                 readChar.push(characterStack.pop());
                 if (readChar.peek() == 'f' && !characterStack.isEmpty()) {
                     readChar.push(characterStack.pop());
-                    if (readChar.peek() == ' ') {
+                    if (readChar.peek() == ' ' || readChar.peek() == '(') {
+                        if (readChar.peek() == '(')
+                            characterStack.push(readChar.pop());
                         readChar.clear();
                         return new Token(TokenType.IF, "if", "if", lineNumber);
                     }
@@ -266,7 +268,7 @@ public class Scanner {
                 number.append(c);
             }
             readChar.clear();
-            return new Token(TokenType.NUMBER, number.toString(), Integer.parseInt(number.toString()), lineNumber);
+            return new Token(TokenType.NUMBER, number.toString(), Double.parseDouble(number.toString()), lineNumber);
         }
         if (!readChar.isEmpty() && characterStack.peek() == '.') {
             readChar.push(characterStack.pop());
@@ -564,7 +566,9 @@ public class Scanner {
                         readChar.push(characterStack.pop());
                         if (readChar.peek() == 'e' && !characterStack.isEmpty()) {
                             readChar.push(characterStack.pop());
-                            if (readChar.peek() == ' ') {
+                            if (readChar.peek() == ' ' || readChar.peek() == '{') {
+                                if (readChar.peek() == '{')
+                                    characterStack.push(readChar.pop());
                                 readChar.clear();
                                 return new Token(TokenType.ELSE, "else", "else", lineNumber);
                             }
@@ -618,7 +622,9 @@ public class Scanner {
                     readChar.push(characterStack.pop());
                     if (readChar.peek() == 'r' && !characterStack.isEmpty()) {
                         readChar.push(characterStack.pop());
-                        if (readChar.peek() == ' ') {
+                        if (readChar.peek() == ' ' || readChar.peek() == '(') {
+                            if (readChar.peek() == '(')
+                                characterStack.push(readChar.pop());
                             readChar.clear();
                             return new Token(TokenType.FOR, "for", "for", lineNumber);
                         }
@@ -775,7 +781,9 @@ public class Scanner {
                             readChar.push(characterStack.pop());
                             if (readChar.peek() == 'e' && !characterStack.isEmpty()) {
                                 readChar.push(characterStack.pop());
-                                if (readChar.peek() == ' ') {
+                                if (readChar.peek() == ' ' || readChar.peek() == '(') {
+                                    if (readChar.peek() == '(')
+                                        characterStack.push(readChar.pop());
                                     readChar.clear();
                                     return new Token(TokenType.WHILE, "while", "while", lineNumber);
                                 }
